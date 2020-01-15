@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs')
 const User = require('../../models/User')
 const jwt = require('jsonwebtoken')
 const keys = require('../../config/keys')
+const passport = require('passport')
 
 const validateRegisterInput = require('../../validation/register')
 const validateLoginInput = require('../../validation/login')
@@ -12,6 +13,16 @@ const validateLoginInput = require('../../validation/login')
 router.use(bodyParser.urlencoded({extended:false}))
 router.use(bodyParser.json())
 
+// get Current Users information
+router.get('/current', passport.authenticate('jwt', {session: false}), (req, res) => {
+    res.json({
+        id: req.user.id,
+        handle: req.user.handle,
+        email: req.user.email
+    })
+})
+
+// Create a new User
 router.post('/register', (req, res) => {
 const { errors, isValid } = validateRegisterInput(req.body);
 
@@ -54,6 +65,7 @@ User.findOne({ handle: req.body.handle })
     })
 })
 
+// Login in User
 router.post('/login', (req, res) => {
 const { errors, isValid } = validateLoginInput(req.body);
 
