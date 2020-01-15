@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const bodyParser = require('body-parser')
 const bcrypt = require('bcryptjs')
 const User = require('../../models/User')
 const jwt = require('jsonwebtoken')
@@ -10,8 +9,6 @@ const passport = require('passport')
 const validateRegisterInput = require('../../validation/register')
 const validateLoginInput = require('../../validation/login')
 
-router.use(bodyParser.urlencoded({extended:false}))
-router.use(bodyParser.json())
 
 // get Current Users information
 router.get('/current', passport.authenticate('jwt', {session: false}), (req, res) => {
@@ -52,7 +49,7 @@ User.findOne({ handle: req.body.handle })
                     const payload = { id: user.id, handle: user.handle }
 
                     jwt.sign(payload, keys.secretOrKey, { expiresIn: 3600}, (err, token)=> {
-                        res.jsob({
+                        res.json({
                             success: true,
                             token: "Bearer " + token
                         })
@@ -103,7 +100,5 @@ User.findOne({handle})
         })
     })
 })
-
-router.get("/test", (req, res) => res.json({ msg: "This is the users route" }));
 
 module.exports = router;
